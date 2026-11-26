@@ -2,248 +2,175 @@
 
 ## Project Overview
 
-The AI YouTube Content Analyzer is an AI-powered application that analyzes YouTube videos and generates useful insights from their content.
+AI YouTube Content Analyzer is a Streamlit application that analyzes YouTube video content and generates an AI-written summary, key points, improvement suggestions, and an explanation of the content's relevance.
 
-Users provide a YouTube video URL, and the application retrieves the video transcript when available. It then uses the Llama 3.3 70B model through the Groq API to generate a summary, key points, improvement suggestions, and an explanation of the video's relevance.
+The application attempts to retrieve an English transcript using YouTube Transcript API. If a transcript is unavailable, it can use the video title as a limited fallback. It uses LangChain and the Groq-hosted Llama 3.3 70B model to generate the analysis.
 
-The application also retrieves video metadata, including the channel name, views, and likes, and provides an engagement-based sentiment indication.
+The application also retrieves available video metadata through yt-dlp and calculates a like-to-view ratio. This ratio is displayed as an engagement indicator; it is not a measurement of actual audience sentiment.
 
-The frontend is built using Streamlit, while LangChain manages the interaction with the language model.
+## Features
 
-## Key Features
+- Accepts YouTube video URLs.
+- Extracts the video ID from supported URL formats.
+- Attempts to retrieve English video transcripts.
+- Uses the video title as a fallback when a transcript is unavailable.
+- Generates a video summary.
+- Extracts key points.
+- Suggests content improvements.
+- Explains the video's relevance.
+- Retrieves available video metadata such as title, channel, views, and likes.
+- Displays a like-to-view engagement indicator.
+- Uses retry logic for failed LLM requests.
+- Provides an interactive Streamlit interface.
 
-- Analyze YouTube videos using their URLs.
-- Extract video transcripts when available.
-- Generate AI-powered video summaries.
-- Identify important points from video content.
-- Generate content improvement suggestions.
-- Explain the relevance of video content.
-- Retrieve YouTube video metadata.
-- Display channel name, views, and likes.
-- Provide an engagement-based sentiment indication.
-- Use video title as a fallback when transcript extraction is unavailable.
-- Retry failed LLM requests.
-- Interactive Streamlit dashboard.
+## Technology Stack
 
-## Technologies Used
-
-| Category | Technologies |
+| Category | Technology |
 |---|---|
-| Programming Language | Python |
-| Frontend | Streamlit |
-| Large Language Model | Llama 3.3 70B Versatile |
-| LLM Provider | Groq |
-| LLM Framework | LangChain |
-| Transcript Extraction | YouTube Transcript API |
-| Video Metadata | yt-dlp |
-| Environment Management | Python dotenv |
-| Text Processing | Regular Expressions |
-
-## Project Architecture
-
-The application follows a simple AI-powered content analysis workflow.
-
-1. The user enters a YouTube video URL.
-2. The application extracts the video ID from the URL.
-3. yt-dlp retrieves available video metadata.
-4. YouTube Transcript API attempts to retrieve the English transcript.
-5. If the transcript is unavailable, the application uses the video title as a fallback when available.
-6. LangChain constructs a prompt containing the video content.
-7. Groq processes the prompt using Llama 3.3 70B.
-8. The model generates the summary, key points, improvements, and relevance.
-9. Streamlit displays the analysis results.
+| Language | Python |
+| User interface | Streamlit |
+| LLM provider | Groq |
+| Model | Llama 3.3 70B Versatile |
+| LLM orchestration | LangChain |
+| Transcript retrieval | YouTube Transcript API |
+| Video metadata | yt-dlp |
+| Environment variables | python-dotenv |
 
 ## Project Structure
 
 ```text
 AI_Youtube_Content_Analyzer/
-|
 ├── analyzer.py
 ├── app.py
-├── requirements.txt
 ├── test_transcript.py
+├── requirements.txt
+├── .env.example
 ├── .gitignore
 └── README.md
 ```
 
-### File Description
+## How It Works
 
-| File | Description |
-|---|---|
-| analyzer.py | Handles video ID extraction, transcript retrieval, LLM analysis, retry logic, and engagement-based sentiment. |
-| app.py | Streamlit frontend for entering YouTube URLs and displaying analysis results. |
-| requirements.txt | Contains the Python dependencies required by the project. |
-| test_transcript.py | Helps check which transcripts are available for a YouTube video. |
-| .gitignore | Specifies files and folders that should not be tracked by Git. |
-| README.md | Project documentation. |
+1. The user enters a YouTube URL in the Streamlit interface.
+2. The application extracts the 11-character video ID.
+3. yt-dlp attempts to retrieve available video metadata.
+4. YouTube Transcript API attempts to retrieve an English transcript.
+5. If a transcript is available, the application uses up to the first 8,000 characters for analysis.
+6. If no transcript is available but the video title is known, the title is used as a limited fallback.
+7. LangChain sends the analysis prompt to the Groq Llama model.
+8. The application displays the summary, key points, improvement suggestions, and relevance section.
 
-## Analysis Components
+## Setup
 
-### 1. Video Information
-
-The application retrieves available video information, including:
-
-- Video title.
-- Channel name.
-- Total views.
-- Total likes.
-
-### 2. Transcript Extraction
-
-The YouTube Transcript API attempts to retrieve the English transcript of the video.
-
-The extracted transcript is combined into a single text string for further analysis.
-
-If transcript extraction fails, the application uses the video title as a fallback when available.
-
-### 3. AI Video Summary
-
-The LLM generates a short summary explaining the main content of the video.
-
-### 4. Key Points
-
-The application identifies important information and main ideas discussed in the video.
-
-### 5. Content Improvements
-
-The AI model provides suggestions for improving the analyzed content.
-
-### 6. Relevance Analysis
-
-The application explains why the video's content matters today.
-
-### 7. Engagement-Based Sentiment
-
-The application uses the ratio of likes to views to display an engagement-based sentiment indication.
-
-The current thresholds are:
-
-| Like-to-View Ratio | Displayed Sentiment |
-|---|---|
-| Above 8% | Positive |
-| Above 3% and up to 8% | Neutral |
-| 3% or below | Negative |
-
-This is a simple engagement heuristic, not a true analysis of audience opinions or comments.
-
-## Installation and Setup
-
-### 1. Clone the Repository
+### 1. Clone the repository
 
 ```bash
 git clone https://github.com/phanikumar-145/AI_Youtube_Content_Analyzer.git
-```
-
-### 2. Navigate to the Project Directory
-
-```bash
 cd AI_Youtube_Content_Analyzer
 ```
 
-### 3. Create a Virtual Environment
+### 2. Create a virtual environment
 
 ```bash
 python -m venv venv
 ```
 
-Activate the environment on Windows:
+Activate it on Windows PowerShell:
 
-```bash
-venv\Scripts\activate
+```powershell
+venv\Scripts\Activate.ps1
 ```
 
-### 4. Install Dependencies
+### 3. Install dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 5. Configure the Groq API Key
+### 4. Configure the Groq API key
 
-Create a `.env` file in the project directory:
+Create a local `.env` file in the project root. Use `.env.example` as a template:
 
 ```env
-GROQ_API_KEY=your_groq_api_key
+GROQ_API_KEY=your_actual_groq_api_key
 ```
 
-Replace the placeholder with your actual Groq API key.
+Get an API key from the Groq developer console. Do not commit `.env` or publish your API key.
 
-Never upload your actual API key to GitHub.
-
-### 6. Run the Application
+### 5. Run the application
 
 ```bash
 streamlit run app.py
 ```
 
-The application will open in your browser.
+Open the local URL printed by Streamlit in your browser.
 
-## Example Input
+## Usage
 
-```text
-https://www.youtube.com/watch?v=VIDEO_ID
-```
+1. Start the Streamlit application.
+2. Paste a supported YouTube video URL.
+3. Select **Analyze Video**.
+4. Wait for metadata retrieval and AI analysis.
+5. Review the displayed summary, key points, improvements, relevance, and available video metrics.
 
-Enter a valid YouTube video URL in the application and click the Analyze Video button.
+## Transcript Diagnostic Script
 
-## Example Analysis Output
+The repository includes `test_transcript.py`, which helps inspect whether transcripts are available for a video.
 
-The application generates the following sections:
-
-### Summary
-
-A short explanation of the video's main content.
-
-### Key Points
-
-Important topics and ideas discussed in the video.
-
-### Improvements
-
-Suggestions for improving the content.
-
-### Relevance Today
-
-An explanation of why the video content is useful or relevant.
-
-### Video Metrics
-
-Available channel, view, like, and engagement-based sentiment information.
-
-## Transcript Testing
-
-The project includes `test_transcript.py` to check available transcripts for a YouTube video.
-
-Run it using:
+Run:
 
 ```bash
 python test_transcript.py
 ```
 
-Enter a YouTube URL when prompted.
+Paste a YouTube URL when prompted. The script lists available transcript languages when the API call succeeds.
 
-The script displays available transcript languages and whether the transcripts are automatically generated.
+## Engagement Indicator
+
+The application calculates:
+
+```text
+like-to-view ratio = (likes / views) * 100
+```
+
+It displays:
+- Positive when the ratio is greater than 8%.
+- Neutral when the ratio is greater than 3% and up to 8%.
+- Negative when the ratio is 3% or lower.
+
+This is a simple engagement heuristic. It does not analyze viewer comments or determine the audience's actual emotional sentiment. Like counts may also be unavailable.
+
+## Limitations
+
+- Transcript retrieval depends on captions being available and accessible.
+- The current transcript request is limited to English.
+- Without a transcript, title-only analysis provides very limited information.
+- Only the first 8,000 characters of available transcript text are sent for analysis.
+- The engagement indicator is based on likes and views, not comment sentiment.
+- YouTube metadata and transcript access may fail because of platform restrictions, rate limits, or video privacy settings.
+- LLM-generated analysis may be incomplete or inaccurate and should be reviewed.
+
+## Important Compatibility Note
+
+The current `analyzer.py` calls `YouTubeTranscriptApi.get_transcript()`. The installed version of `youtube-transcript-api` may expose a different interface. If transcript retrieval fails after installation, check the installed library version and update the code to use the API supported by that version.
 
 ## Future Improvements
 
-- Support multiple transcript languages.
-- Add video comment analysis.
-- Analyze audience feedback using sentiment analysis.
-- Generate chapter-wise summaries.
-- Add timestamp-based key points.
-- Support long videos through transcript chunking.
-- Generate downloadable analysis reports.
-- Add video comparison functionality.
-- Improve transcript extraction error handling.
-- Add more detailed engagement analytics.
+- Support transcript languages beyond English.
+- Add chapter-wise summaries and timestamped key points.
+- Add YouTube comment retrieval and actual comment sentiment analysis.
+- Process long transcripts using chunking and map-reduce summarization.
+- Use structured output validation for more reliable analysis sections.
+- Improve URL validation and error reporting.
+- Add downloadable summaries and analysis reports.
+- Add video comparison and analysis history.
 
-## Important Limitations
+## Security and Responsible Use
 
-- Transcript extraction depends on transcript availability and YouTube access.
-- When the transcript is unavailable, title-based analysis cannot provide the same depth as transcript-based analysis.
-- The current analysis processes a maximum of 8,000 characters from the selected content.
-- The sentiment indication is calculated from likes and views, not actual viewer comments.
-- AI-generated summaries and suggestions may contain inaccuracies.
+- Keep the Groq API key in a local `.env` file.
+- Never commit API keys or other secrets.
+- Respect YouTube's terms and applicable copyright rules when retrieving and processing video content.
+- Review generated summaries before relying on them.
 
 ## Author
 
